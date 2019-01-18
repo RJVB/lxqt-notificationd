@@ -27,9 +27,18 @@
 
 #include <QDesktopWidget>
 #include <QApplication>
-#include <LXQt/Globals>
-#include <LXQt/Settings>
+#ifndef NOLXQT
+    #include <LXQt/Globals>
+    #include <LXQt/Settings>
+#endif
 #include "notificationarea.h"
+
+#ifdef NOLXQT
+    #include <QDebug>
+    #define QSL(s) QStringLiteral(s)
+    #define QL1S(s) QLatin1Literal(s)
+    #define QL1C(s) QLatin1Char(s)
+#endif
 
 
 NotificationArea::NotificationArea(QWidget *parent)

@@ -29,8 +29,14 @@
 #include <QtDBus/QDBusConnection>
 #include <QCommandLineParser>
 
-#include <LXQt/Application>
-#include <LXQt/Globals>
+#ifndef NOLXQT
+    #include <LXQt/Application>
+    #include <LXQt/Globals>
+#else
+    #include <QDebug>
+    #include "../notifyd_fullversion.h"
+    #define QSL(s) QStringLiteral(s)
+#endif
 
 #include "notificationsadaptor.h"
 #include "notifyd.h"
@@ -67,14 +73,23 @@
  */
 int main(int argc, char** argv)
 {
+#ifdef NOLXQT
+    QApplication a(argc, argv);
+#else
     LXQt::Application a(argc, argv);
+#endif
     a.setQuitOnLastWindowClosed(false);
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("LXQt Notification Daemon"));
+#ifndef NOLXQT
     const QString VERINFO = QStringLiteral(LXQT_NOTIFICATIOND_VERSION
                                            "\nliblxqt   " LXQT_VERSION
                                            "\nQt        " QT_VERSION_STR);
+#else
+    const QString VERINFO = QStringLiteral(NOTIFYD_FULL_VERSION_STRING
+                                           "\nQt        " QT_VERSION_STR);
+#endif
     a.setApplicationVersion(VERINFO);
     parser.addVersionOption();
     parser.addHelpOption();

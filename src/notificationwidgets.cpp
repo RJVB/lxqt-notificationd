@@ -25,7 +25,9 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-#include <LXQt/Globals>
+#ifndef NOLXQT
+    #include <LXQt/Globals>
+#endif
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -36,6 +38,12 @@
 #include "notificationwidgets.h"
 
 #include <QtDebug>
+
+#ifdef NOLXQT
+    #define QSL(s) QStringLiteral(s)
+    #define QL1S(s) QLatin1Literal(s)
+    #define QL1C(s) QLatin1Char(s)
+#endif
 
 
 NotificationActionsWidget::NotificationActionsWidget(const QStringList& actions, QWidget *parent)

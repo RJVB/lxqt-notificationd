@@ -27,12 +27,21 @@
 
 #include "notificationlayout.h"
 
-#include <LXQt/Globals>
+#ifndef NOLXQT
+    #include <LXQt/Globals>
+#endif
 
 #include <QtDebug>
 #include <QBrush>
 #include <QSettings>
 #include <QStandardPaths>
+
+#ifdef NOLXQT
+    #include <QDebug>
+    #define QSL(s) QStringLiteral(s)
+    #define QL1S(s) QLatin1Literal(s)
+    #define QL1C(s) QLatin1Char(s)
+#endif
 
 NotificationLayout::NotificationLayout(QWidget *parent)
     : QWidget(parent),

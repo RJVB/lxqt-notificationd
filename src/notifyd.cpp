@@ -31,6 +31,13 @@
 #include <QProcess>
 #include <QDebug>
 
+#ifdef NOLXQT
+    #include "../notifyd_fullversion.h"
+    #define QSL(s) QStringLiteral(s)
+    #define QL1S(s) QLatin1Literal(s)
+    #define QL1C(s) QLatin1Char(s)
+#endif
+
 
 /*
  * Implementation of class Notifyd
@@ -42,7 +49,11 @@ Notifyd::Notifyd(QObject* parent)
       m_trayChecker(0)
 {
     m_area = new NotificationArea();
+#ifndef NOLXQT
     m_settings = new LXQt::Settings(QSL("notifications"));
+#else
+    m_settings = new QSettings(QSL("org.LXQt"), QSL("notifyd"));
+#endif
     reloadSettings();
 
     connect(this, &Notifyd::notificationAdded,
@@ -59,8 +70,10 @@ Notifyd::Notifyd(QObject* parent)
     connect(m_area->layout(), &NotificationLayout::actionInvoked,
             this, &Notifyd::ActionInvoked);
 
+#ifndef NOLXQT
     connect(m_settings, &LXQt::Settings::settingsChanged,
             this, &Notifyd::reloadSettings);
+#endif
 
 }
 
@@ -99,7 +112,12 @@ QString Notifyd::GetServerInformation(QString& vendor,
                                       QString& spec_version)
 {
     spec_version = QSL("1.2");
+#ifndef NOLXQT
     version = QSL(LXQT_VERSION);
+#else
+    // TODO: get git version (`git describe`)
+    version = QSL(NOTIFYD_FULL_VERSION_STRING);
+#endif
     vendor = QSL("lxqt.org");
     return QSL("lxqt-notificationd");
 }
@@ -189,11 +207,13 @@ void Notifyd::createTrayIcon()
     if (m_trayIcon.isNull())
     {
         m_trayIcon = new QSystemTrayIcon(QIcon::fromTheme(QSL("preferences-desktop-notification")), this);
+#ifndef Q_OS_MACOS
         /* show the menu also on left clicking */
         connect(m_trayIcon, &QSystemTrayIcon::activated, [this] (QSystemTrayIcon::ActivationReason r) {
             if (r == QSystemTrayIcon::Trigger && !m_trayMenu.isNull())
                 m_trayMenu->exec(QCursor::pos());
         });
+#endif
     }
 
     QSettings list(m_area->layout()->cacheFile(), QSettings::IniFormat);

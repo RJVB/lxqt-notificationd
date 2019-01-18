@@ -31,7 +31,11 @@
 #include <QDateTime>
 #include <QtDBus/QDBusArgument>
 #include <QDebug>
-#include <XdgIcon>
+#ifdef NOLXQT
+    #include <QIcon>
+#else
+    #include <XdgIcon>
+#endif
 #include <KWindowSystem/KWindowSystem>
 #include <QMouseEvent>
 #include <QPushButton>
@@ -40,6 +44,13 @@
 
 #include "notification.h"
 #include "notificationwidgets.h"
+
+#ifdef NOLXQT
+    #include <QDebug>
+    #define QSL(s) QStringLiteral(s)
+    #define QL1S(s) QLatin1Literal(s)
+    #define QL1C(s) QLatin1Char(s)
+#endif
 
 #define ICONSIZE QSize(32, 32)
 
@@ -270,7 +281,11 @@ QPixmap Notification::getPixmapFromString(const QString &str) const
 //        qDebug() << "    getPixmapFromString by XdgIcon theme" << str << ICONSIZE << XdgIcon::themeName();
 //        qDebug() << "       " << XdgIcon::fromTheme(str) << "isnull:" << XdgIcon::fromTheme(str).isNull();
         // They say: do not display an icon if it;s not found - see #325
+#ifdef NOLXQT
+        return QIcon::fromTheme(str/*, XdgIcon::defaultApplicationIcon()*/).pixmap(ICONSIZE);
+#else
         return XdgIcon::fromTheme(str/*, XdgIcon::defaultApplicationIcon()*/).pixmap(ICONSIZE);
+#endif
     }
 }
 

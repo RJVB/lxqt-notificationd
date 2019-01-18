@@ -38,7 +38,11 @@
 #include <QMenu>
 
 #include "notificationarea.h"
-#include <LXQt/Settings>
+#ifndef NOLXQT
+    #include <LXQt/Settings>
+#else
+    #include <QSettings>
+#endif
 
 /*
  * Class for interface org.freedesktop.Notifications
@@ -135,7 +139,11 @@ private:
     NotificationArea *m_area;
     int m_serverTimeout;
 
+#ifndef NOLXQT
     LXQt::Settings *m_settings;
+#else
+    QSettings *m_settings;
+#endif
 
     QPointer<QSystemTrayIcon> m_trayIcon;
     QPointer<QMenu> m_trayMenu;
