@@ -28,7 +28,11 @@
 #ifndef ADVANCEDSETTINGS_H
 #define ADVANCEDSETTINGS_H
 
-#include <LXQt/Settings>
+#ifndef NOLXQT
+    #include <LXQt/Settings>
+#else
+    #include <QSettings>
+#endif
 #include <QWidget>
 #include "ui_advancedsettings.h"
 
@@ -37,14 +41,22 @@ class AdvancedSettings : public QWidget, public Ui::AdvancedSettings
     Q_OBJECT
 
 public:
+#ifndef NOLXQT
     explicit AdvancedSettings(LXQt::Settings* settings, QWidget* parent = 0);
+#else
+    explicit AdvancedSettings(QSettings* settings, QWidget* parent = 0);
+#endif
     ~AdvancedSettings();
 
 public slots:
     void restoreSettings();
 
 private:
+#ifndef NOLXQT
     LXQt::Settings* mSettings;
+#else
+    QSettings* mSettings;
+#endif
 
 private slots:
     void save();

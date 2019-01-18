@@ -25,13 +25,24 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-#include <LXQt/Notification>
+#ifndef NOLXQT
+    #include <LXQt/Notification>
+#endif
 
 #include "basicsettings.h"
 #include "mainwindow.h"
 
 
-BasicSettings::BasicSettings(LXQt::Settings* settings, QWidget *parent) :
+#ifdef NOLXQT
+    using Settings = QSettings;
+    #define QSL(s) QStringLiteral(s)
+    #define QL1S(s) QLatin1Literal(s)
+    #define QL1C(s) QLatin1Char(s)
+#else
+    using Settings = LXQt::Settings;
+#endif
+
+BasicSettings::BasicSettings(Settings* settings, QWidget *parent) :
     QWidget(parent),
     mSettings(settings)
 {
@@ -48,6 +59,7 @@ BasicSettings::BasicSettings(LXQt::Settings* settings, QWidget *parent) :
     connect(bottomCenterRB, SIGNAL(clicked()), this, SLOT(updateNotification()));
     connect(bottomRightRB,  SIGNAL(clicked()), this, SLOT(updateNotification()));
 
+#ifndef NOLXQT
     LXQt::Notification serverTest;
     QString serverName = serverTest.serverInfo().name;
     if (serverName != QL1S("lxqt-notificationd"))
@@ -59,6 +71,7 @@ BasicSettings::BasicSettings(LXQt::Settings* settings, QWidget *parent) :
             warningLabel->setText(tr("<b>Warning:</b> A third-party notifications daemon (%1) is running.\n"
             "These settings won't have any effect on it!").arg(serverName));
     }
+#endif
 }
 
 BasicSettings::~BasicSettings()
@@ -109,7 +122,9 @@ void BasicSettings::updateNotification()
         align = QL1S("bottom-right");
 
     mSettings->setValue(QL1S("placement"), align);
+#ifndef NOLXQT
     LXQt::Notification::notify(tr("Notification demo ") + align,
                                tr("This is a test notification.\n All notifications will now appear here on LXQt."),
                                QStringLiteral("lxqt"));
+#endif
 }

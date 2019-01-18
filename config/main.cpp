@@ -25,11 +25,21 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-#include <LXQt/Globals>
-#include <LXQt/SingleApplication>
+#ifndef NOLXQT
+    #include <LXQt/Globals>
+    #include <LXQt/SingleApplication>
 
-#include <XdgIcon>
-#include <LXQt/Settings>
+    #include <XdgIcon>
+    #include <LXQt/Settings>
+#else
+    #include <QApplication>
+    #include <QIcon>
+    #include <QSettings>
+    #include "../notifyd_fullversion.h"
+    #define QSL(s) QStringLiteral(s)
+    #define QL1S(s) QLatin1Literal(s)
+    #define QL1C(s) QLatin1Char(s)
+#endif
 #include <QCommandLineParser>
 
 #include "mainwindow.h"
@@ -37,14 +47,23 @@
 
 int main(int argc, char** argv)
 {
+#ifndef NOLXQT
     LXQt::SingleApplication a(argc, argv);
+#else
+    QApplication a(argc, argv);
+#endif
     a.setAttribute(Qt::AA_UseHighDpiPixmaps, true);
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("LXQt Config Notificationd"));
+#ifndef NOLXQT
     const QString VERINFO = QStringLiteral(LXQT_NOTIFICATIOND_VERSION
                                            "\nliblxqt   " LXQT_VERSION
                                            "\nQt        " QT_VERSION_STR);
+#else
+    const QString VERINFO = QStringLiteral(NOTIFYD_FULL_VERSION_STRING
+                                           "\nQt        " QT_VERSION_STR);
+#endif
     a.setApplicationVersion(VERINFO);
     parser.addVersionOption();
     parser.addHelpOption();
@@ -52,7 +71,9 @@ int main(int argc, char** argv)
 
     MainWindow w;
     w.setWindowIcon(QIcon::fromTheme(QSL("preferences-desktop-theme")));
+#ifndef NOLXQT
     a.setActivationWindow(&w);
+#endif
     w.show();
 
     return a.exec();

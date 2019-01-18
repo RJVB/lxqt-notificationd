@@ -28,7 +28,11 @@
 #ifndef BASICSETTINGS_H
 #define BASICSETTINGS_H
 
-#include <LXQt/Settings>
+#ifndef NOLXQT
+    #include <LXQt/Settings>
+#else
+    #include <QSettings>
+#endif
 #include <QWidget>
 #include "ui_basicsettings.h"
 
@@ -37,7 +41,11 @@ class BasicSettings : public QWidget, public Ui::BasicSettings
 {
     Q_OBJECT
 public:
+#ifndef NOLXQT
     explicit BasicSettings(LXQt::Settings* settings, QWidget* parent = 0);
+#else
+    explicit BasicSettings(QSettings* settings, QWidget* parent = 0);
+#endif
     ~BasicSettings();
 
 public slots:
@@ -47,7 +55,11 @@ private slots:
     void updateNotification();
 
 private:
+#ifndef NOLXQT
     LXQt::Settings* mSettings;
+#else
+    QSettings* mSettings;
+#endif
 };
 
 #endif // BASICSETTINGS_H

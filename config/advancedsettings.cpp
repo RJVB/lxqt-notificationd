@@ -30,8 +30,17 @@
 #include "advancedsettings.h"
 #include "mainwindow.h"
 
+#ifdef NOLXQT
+    using Settings = QSettings;
+    #define QSL(s) QStringLiteral(s)
+    #define QL1S(s) QLatin1Literal(s)
+    #define QL1C(s) QLatin1Char(s)
+#else
+    using Settings = LXQt::Settings;
+#endif
 
-AdvancedSettings::AdvancedSettings(LXQt::Settings* settings, QWidget *parent):
+
+AdvancedSettings::AdvancedSettings(Settings* settings, QWidget *parent):
     QWidget(parent),
     mSettings(settings)
 {

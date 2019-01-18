@@ -29,8 +29,17 @@
 #include <QMessageBox>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
-#include <LXQt/Globals>
-#include <LXQt/ConfigDialog>
+#ifndef NOLXQT
+    #include <LXQt/Globals>
+    #include <LXQt/ConfigDialog>
+    using Settings = LXQt::Settings;
+#else
+    #include <QSettings>
+    using Settings = QSettings;
+    #define QSL(s) QStringLiteral(s)
+    #define QL1S(s) QLatin1Literal(s)
+    #define QL1C(s) QLatin1Char(s)
+#endif
 
 #include "mainwindow.h"
 #include "basicsettings.h"
@@ -38,7 +47,9 @@
 
 
 MainWindow::MainWindow(QWidget *parent) :
-    LXQt::ConfigDialog(tr("Desktop Notifications"), new LXQt::Settings(QSL("notifications")), parent)
+    ConfigDialog(tr("Desktop Notifications"),
+    new Settings(QSL("notifications")),
+    parent)
 {
     BasicSettings* basic = new BasicSettings(mSettings, this);
     addPage(basic, tr("Basic Settings"), QSL("preferences-desktop-notification"));

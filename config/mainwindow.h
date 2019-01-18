@@ -28,10 +28,16 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <LXQt/ConfigDialog>
+#ifndef NOLXQT
+    #include <LXQt/ConfigDialog>
+    using ConfigDialog = LXQt::ConfigDialog;
+#else
+    #include <QDialog>
+    using ConfigDialog = QDialog;
+#endif
 
 
-class MainWindow : public LXQt::ConfigDialog
+class MainWindow : public ConfigDialog
 {
     Q_OBJECT
 
