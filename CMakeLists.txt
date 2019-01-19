@@ -37,11 +37,6 @@ if (NOT STANDALONE)
 else()
     include(CMakePackageConfigHelpers)
     include(GNUInstallDirs) # Standard directories for installation
-    set(CMAKE_MODULE_PATH
-        ${CMAKE_INSTALL_FULL_DATAROOTDIR}/cmake/lxqt-build-tools
-        ${CMAKE_INSTALL_FULL_DATAROOTDIR}/cmake/lxqt-build-tools/find-modules
-        ${CMAKE_INSTALL_FULL_DATAROOTDIR}/cmake/lxqt-build-tools/modules
-        ${CMAKE_MODULE_PATH})
     add_definitions(-DNOLXQT)
     set(NOLXQT ON)
 endif()
@@ -86,10 +81,9 @@ add_definitions(
     "-DQT_NO_CAST_FROM_BYTEARRAY"
 )
 
-include(LXQtPreventInSourceBuilds)
-include(LXQtCompilerSettings NO_POLICY_SCOPE)
-
 if (NOT STANDALONE)
+    include(LXQtPreventInSourceBuilds)
+    include(LXQtCompilerSettings NO_POLICY_SCOPE)
     # Translations **********************************
     include(LXQtTranslate)
 endif()
