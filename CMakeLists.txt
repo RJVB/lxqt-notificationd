@@ -18,6 +18,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(UPDATE_TRANSLATIONS "Update source translation translations/*.ts files" OFF)
 option(LXQT_NOTIFICATION_BUILD_TESTS "Build LXQt Notification tests" OFF)
+if (APPLE OR WIN32)
+    option(STANDALONE "Build without LXQt (default on Mac and Windows)" ON)
+else()
+    option(STANDALONE "Build without LXQt (default on Mac and Windows)" OFF)
+endif()
 
 set(KF5_MINIMUM_VERSION "5.36.0")
 set(LXQT_MINIMUM_VERSION "0.14.0")
@@ -27,7 +32,7 @@ find_package(Qt5DBus ${QT_MINIMUM_VERSION} REQUIRED)
 find_package(Qt5LinguistTools ${QT_MINIMUM_VERSION} REQUIRED)
 find_package(Qt5Widgets ${QT_MINIMUM_VERSION} REQUIRED)
 find_package(KF5WindowSystem ${KF5_MINIMUM_VERSION} REQUIRED)
-if (NOT APPLE AND NOT WIN32)
+if (NOT STANDALONE)
     find_package(lxqt ${LXQT_MINIMUM_VERSION} REQUIRED)
 else()
     include(CMakePackageConfigHelpers)
@@ -84,14 +89,14 @@ add_definitions(
 include(LXQtPreventInSourceBuilds)
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
 
-if (NOT APPLE)
+if (NOT STANDALONE)
     # Translations **********************************
     include(LXQtTranslate)
 endif()
 
 add_subdirectory(config)
 add_subdirectory(src)
-if (LXQT_NOTIFICATION_BUILD_TESTS AND NOT APPLE)
+if (LXQT_NOTIFICATION_BUILD_TESTS AND NOT STANDALONE)
     add_subdirectory(test)
 endif()
 

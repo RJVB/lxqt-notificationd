@@ -13,7 +13,7 @@ set(NOTIFICATIONS_CONF_UI
 )
 
 
-if (NOT APPLE)
+if (NOT STANDALONE)
     # Translations **********************************
     lxqt_translate_ts(NOTIFICATIONS_CONF_QM
         UPDATE_TRANSLATIONS ${UPDATE_TRANSLATIONS}
@@ -40,7 +40,7 @@ target_link_libraries(${PROJECT_NAME}
     KF5::WindowSystem
     Qt5::Widgets
 )
-if (NOT APPLE)
+if (NOT STANDALONE)
     target_link_libraries(${PROJECT_NAME}
         lxqt
     )

@@ -19,7 +19,7 @@ qt5_add_dbus_adaptor(NOTIFICATIONS_DBUS_SRC
 set_property(SOURCE ${NOTIFICATIONS_DBUS_SRC} PROPERTY SKIP_AUTOGEN ON)
 list(APPEND NOTIFICATIONS_SRC "${NOTIFICATIONS_DBUS_SRC}")
 
-if (NOT APPLE)
+if (NOT STANDALONE)
     # Translations **********************************
     lxqt_translate_ts(NOTIFICATIONS_QM_FILES
         UPDATE_TRANSLATIONS ${UPDATE_TRANSLATIONS}
@@ -44,7 +44,7 @@ target_link_libraries(lxqt-notificationd
     Qt5::DBus
     KF5::WindowSystem
 )
-if (NOT APPLE)
+if (NOT STANDALONE)
     target_link_libraries(lxqt-notificationd lxqt)
 endif()
 

@@ -1,6 +1,6 @@
 file(GLOB DESKTOP_FILES_IN *.desktop.in)
 
-if (NOT APPLE)
+if (NOT STANDALONE)
     # Translations **********************************
     lxqt_translate_desktop(DESKTOP_FILES
         SOURCES
