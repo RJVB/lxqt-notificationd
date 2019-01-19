@@ -34,7 +34,11 @@
     #include <LXQt/ConfigDialog>
     using Settings = LXQt::Settings;
 #else
+    #include <QDebug>
     #include <QSettings>
+    #include <QTabWidget>
+    #include <QDialogButtonBox>
+    #include <QAbstractButton>
     using Settings = QSettings;
     #define QSL(s) QStringLiteral(s)
     #define QL1S(s) QLatin1Literal(s)
@@ -45,11 +49,46 @@
 #include "basicsettings.h"
 #include "advancedsettings.h"
 
+#ifdef NOLXQT
+ConfigDialog::ConfigDialog(const QString &title, QSettings *settings, QWidget *parent)
+    : QDialog(parent)
+    , mSettings(settings)
+{
+    setWindowTitle(title);
+    tabWidget = new QTabWidget(this);
+
+    // no point in providing a reset button because AFAICT
+    // the settings widgets do not cache previous values that could be restored.
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+                                     | QDialogButtonBox::Cancel
+                                     /*| QDialogButtonBox::Reset*/);
+
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    connect(buttonBox, &QDialogButtonBox::clicked, this, &ConfigDialog::buttonClicked);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(tabWidget);
+    mainLayout->addWidget(buttonBox);
+    setLayout(mainLayout);
+}
+
+void ConfigDialog::buttonClicked(QAbstractButton *button)
+{
+    const auto standardButton = buttonBox->standardButton(button);
+    if (standardButton == QDialogButtonBox::Reset) {
+        emit reset();
+    }
+}
+
+void ConfigDialog::addPage(QWidget *tab, const QString &title, const QString &iconName)
+{
+    tabWidget->addTab(tab, QIcon::fromTheme(iconName), title);
+}
+#endif
 
 MainWindow::MainWindow(QWidget *parent) :
-    ConfigDialog(tr("Desktop Notifications"),
-    new Settings(QSL("notifications")),
-    parent)
+    ConfigDialog(tr("Desktop Notifications"), new Settings(QSL("notifications")), parent)
 {
     BasicSettings* basic = new BasicSettings(mSettings, this);
     addPage(basic, tr("Basic Settings"), QSL("preferences-desktop-notification"));
@@ -64,3 +103,7 @@ MainWindow::~MainWindow()
 {
     delete mSettings;
 }
+
+#ifdef NOLXQT
+#include "moc_mainwindow.cpp"
+#endif

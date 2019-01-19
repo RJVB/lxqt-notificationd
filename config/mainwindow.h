@@ -33,7 +33,29 @@
     using ConfigDialog = LXQt::ConfigDialog;
 #else
     #include <QDialog>
-    using ConfigDialog = QDialog;
+    #include <QString>
+    class QTabWidget;
+    class QDialogButtonBox;
+    class QAbstractButton;
+    class QSettings;
+
+    class ConfigDialog : public QDialog
+    {
+        Q_OBJECT
+
+    public:
+        explicit ConfigDialog(const QString &title, QSettings *settings, QWidget *parent = 0);
+        void addPage(QWidget *tab, const QString &title, const QString &iconName);
+
+        QSettings *mSettings;
+    signals:
+        void reset();
+    private slots:
+        void buttonClicked(QAbstractButton *button);
+    private:
+        QTabWidget *tabWidget;
+        QDialogButtonBox *buttonBox;
+    };
 #endif
 
 
