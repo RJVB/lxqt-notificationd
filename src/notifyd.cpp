@@ -214,7 +214,10 @@ void Notifyd::createTrayIcon()
                 m_trayMenu->exec(QCursor::pos());
         });
 #endif
-    }
+#ifdef NOLXQT
+        m_trayIcon->setVisible(true);
+#endif
+}
 
     QSettings list(m_area->layout()->cacheFile(), QSettings::IniFormat);
     QStringList dates = list.childGroups();
@@ -245,8 +248,12 @@ void Notifyd::createTrayIcon()
     // "Clear All"
     action = m_trayMenu->addAction(QIcon::fromTheme(QSL("edit-clear")), tr("Clear All"));
     connect(action, &QAction::triggered, m_trayMenu, [this] {
+#ifndef NOLXQT
         m_trayIcon->setVisible(false);
         m_trayMenu->deleteLater();
+#else
+        m_trayIcon->setIcon(QIcon::fromTheme(QSL("preferences-desktop-notification")));
+#endif
         QSettings(m_area->layout()->cacheFile(), QSettings::IniFormat).clear();
     });
 
@@ -255,9 +262,19 @@ void Notifyd::createTrayIcon()
     connect(action, &QAction::triggered, m_trayMenu, [] {
         QProcess::startDetached(QSL("lxqt-config-notificationd"));
     });
+#ifdef NOLXQT
+    action = m_trayMenu->addAction(QIcon::fromTheme(QSL("exit")), tr("Quit"));
+    connect(action, &QAction::triggered, qApp, &QCoreApplication::quit);
+#endif
 
     m_trayIcon->setContextMenu(m_trayMenu);
+#ifndef NOLXQT
     m_trayIcon->setVisible(!dates.isEmpty());
+#else
+    if (dates.isEmpty()) {
+        m_trayIcon->setIcon(QIcon::fromTheme(QSL("preferences-desktop-notification-bell")));
+    }
+#endif
     m_trayIcon->setToolTip(tr("%1 Unattended Notification(s)")
                             .arg(m_trayMenu->actions().size() - 3));
 }
@@ -314,7 +331,11 @@ void Notifyd::addToUnattendedList(uint /*id*/, uint reason, const QString &date)
             action->setData(date);
             m_trayMenu->insertAction(actions.isEmpty() ? nullptr : actions.first(), action);
             connect(action, &QAction::triggered, this, &Notifyd::restoreUnattended);
+#ifndef NOLXQT
             m_trayIcon->setVisible(true);
+#else
+            m_trayIcon->setIcon(QIcon::fromTheme(QSL("preferences-desktop-notification-bell")));
+#endif
             m_trayIcon->setToolTip(tr("%1 Unattended Notification(s)")
                                     .arg(m_trayMenu->actions().size() - 3));
         }
@@ -330,9 +351,13 @@ void Notifyd::restoreUnattended()
         delete action;
         if (m_trayMenu->actions().size() == 3) // separator, "Clear All" and "Options" exist
         {
+#ifndef NOLXQT
             m_trayIcon->setVisible(false);
             // NOTE: If the menu isn't deleted here, it won't be shown later (a Qt bug?).
             m_trayMenu->deleteLater();
+#else
+            m_trayIcon->setIcon(QIcon::fromTheme(QSL("preferences-desktop-notification")));
+#endif
         }
         else
             m_trayIcon->setToolTip(tr("%1 Unattended Notification(s)")
