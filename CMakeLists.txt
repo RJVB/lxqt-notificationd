@@ -36,7 +36,7 @@ if (NOT STANDALONE)
     find_package(lxqt ${LXQT_MINIMUM_VERSION} REQUIRED)
 else()
     include(CMakePackageConfigHelpers)
-    include(GNUInstallDirs) # Standard directories for installation
+    include(KDEInstallDirs) # Standard directories for installation
     add_definitions(-DNOLXQT)
     set(NOLXQT ON)
 endif()
@@ -73,6 +73,9 @@ if (NOLXQT)
     configure_file(notifyd_fullversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/notifyd_fullversion.h)
 endif()
 
+set(CMAKE_WIN32_EXECUTABLE ON)
+set(CMAKE_MACOSX_BUNDLE ON)
+
 add_definitions(
     "-DLXQT_NOTIFICATIOND_VERSION=\"${LXQT_NOTIFICATIOND_VERSION}\""
     "-DQT_NO_CAST_FROM_ASCII"
@@ -88,6 +91,7 @@ if (NOT STANDALONE)
     include(LXQtTranslate)
 endif()
 
+
 add_subdirectory(config)
 add_subdirectory(src)
 if (LXQT_NOTIFICATION_BUILD_TESTS AND NOT STANDALONE)
@@ -96,5 +100,11 @@ endif()
 
 ## merged from lxqt-common
 add_subdirectory(autostart)
+
+if (NOT BUNDLE_INSTALL_DIR)
+    _define_absolute(BUNDLEDIR "/Applications"
+        "application bundles"
+        BUNDLE_INSTALL_DIR)
+endif()
 
 feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)

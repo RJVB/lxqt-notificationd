@@ -51,5 +51,6 @@ endif()
 install(TARGETS
     lxqt-notificationd
     RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    BUNDLE DESTINATION "${BUNDLE_INSTALL_DIR}"
     COMPONENT Runtime
 )
